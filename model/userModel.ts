@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { iUserData } from "../utils/interfaces";
+import { SCHOOL } from "../utils/enums";
 
 const userModel = new Schema<iUserData>(
   {
@@ -11,6 +12,9 @@ const userModel = new Schema<iUserData>(
     password: {
       type: String,
     },
+    schoolName: {
+      type: String,
+    },
     token: {
       type: String,
     },
@@ -20,7 +24,6 @@ const userModel = new Schema<iUserData>(
     },
     status: {
       type: String,
-      default: "school",
     },
     verify: {
       type: Boolean,

@@ -10,6 +10,7 @@ export interface iError {
 
 export interface iUser {
   email: string;
+  schoolName: string;
   password: string;
   token: string;
   schoolCode: string;

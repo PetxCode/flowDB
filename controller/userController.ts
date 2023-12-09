@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { HTTP } from "../utils/enums";
+import { FOOD, HTTP, SCHOOL } from "../utils/enums";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import userModel from "../model/userModel";
@@ -8,7 +8,7 @@ import { sendEmail, sendResetPasswordEmail } from "../utils/email";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, schoolName } = req.body;
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -19,8 +19,42 @@ export const createUser = async (req: Request, res: Response) => {
     const user = await userModel.create({
       email,
       password: hashedPassword,
+      schoolName,
       schoolCode,
       token,
+      status: SCHOOL.ADMIN,
+    });
+
+    sendEmail(user);
+    console.log("reading this line");
+    return res.status(HTTP.CREATED).json({
+      message: "user created successfully",
+      data: user,
+    });
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: "Error creating user: ",
+    });
+  }
+};
+
+export const createAdmin = async (req: Request, res: Response) => {
+  try {
+    const { email, password, schoolName } = req.body;
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const token = crypto.randomBytes(3).toString("hex");
+    const schoolCode = crypto.randomBytes(4).toString("hex");
+
+    const user = await userModel.create({
+      email,
+      password: hashedPassword,
+      schoolName,
+      schoolCode,
+      token,
+      status: FOOD.ADMIN,
     });
 
     sendEmail(user);
@@ -64,7 +98,7 @@ export const verifyUser = async (req: Request, res: Response) => {
   }
 };
 
-export const signinUser = async (req: Request, res: Response) => {
+export const signinUser = async (req: any, res: Response) => {
   try {
     const { email, password } = req.body;
     const getUser = await userModel.findOne({ email });
@@ -81,6 +115,9 @@ export const signinUser = async (req: Request, res: Response) => {
             "justasecret",
             { expiresIn: "2d" }
           );
+          req.session.isAuth = true;
+          req.session.data = getUser;
+
           return res.status(HTTP.OK).json({
             message: "user has been verified",
             data: token,
@@ -197,6 +234,35 @@ export const getAllUsers = async (req: any, res: Response) => {
         message: "You don't have the pass for this",
       });
     }
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: "Error creating user: ",
+    });
+  }
+};
+
+export const getAllUser = async (req: any, res: Response) => {
+  try {
+    const getUser = await userModel.find();
+
+    return res.status(HTTP.OK).json({
+      message: "user found",
+      data: getUser,
+    });
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: "Error creating user: ",
+    });
+  }
+};
+
+export const logOutUser = async (req: any, res: Response) => {
+  try {
+    req.session.destroy();
+
+    return res.status(HTTP.OK).json({
+      message: "User has been logged out",
+    });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "Error creating user: ",
