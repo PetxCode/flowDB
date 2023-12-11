@@ -4,6 +4,7 @@ import {
   createUser,
   getAllUser,
   getAllUsers,
+  getCookieUser,
   logOutUser,
   resetUserPassword,
   signinUser,
@@ -24,6 +25,7 @@ router.route("/all-user").get(authRized, getAllUser);
 
 router.route("/verify-user").patch(verifyUser);
 router.route("/logout").get(logOutUser);
+router.route("/user-cookie").get(getCookieUser);
 
 router.route("/reset-user-password").patch(resetUserPassword);
 router

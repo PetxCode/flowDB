@@ -20,7 +20,8 @@ const oAuth = new google.auth.OAuth2(
 
 oAuth.setCredentials({ refresh_token: GOOGLE_REFRESH });
 
-const URL: string = `http://localhost:5173`;
+// const URL: string = `http://localhost:5173`;
+const URL: string = `http://localhost:5174`;
 
 export const sendEmail = async (user: any) => {
   try {
@@ -42,7 +43,9 @@ export const sendEmail = async (user: any) => {
     const data = {
       token: user.token,
       email: user.email,
-      url: `${URL}/user-verify/${user._id}`,
+      // http://localhost:5174/account/verify
+      // url: `${URL}/user-verify/${user._id}`,
+      url: `${URL}/account/verify`,
     };
 
     const html = await ejs.renderFile(getFile, { data });

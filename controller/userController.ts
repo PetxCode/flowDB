@@ -121,6 +121,7 @@ export const signinUser = async (req: any, res: Response) => {
           return res.status(HTTP.OK).json({
             message: "user has been verified",
             data: token,
+            readCookie: req.session.data,
           });
         } else {
           return res.status(HTTP.BAD).json({
@@ -262,6 +263,21 @@ export const logOutUser = async (req: any, res: Response) => {
 
     return res.status(HTTP.OK).json({
       message: "User has been logged out",
+    });
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: "Error creating user: ",
+    });
+  }
+};
+
+export const getCookieUser = async (req: any, res: Response) => {
+  try {
+    const data = req.session.data;
+
+    return res.status(HTTP.OK).json({
+      message: "user cookie data",
+      data,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
